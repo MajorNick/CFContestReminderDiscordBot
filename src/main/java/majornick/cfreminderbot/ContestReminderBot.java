@@ -1,10 +1,10 @@
-package majornick;
+package majornick.cfreminderbot;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
-import majornick.models.CFResponse;
-import majornick.models.Contest;
+import majornick.cfreminderbot.models.CFResponse;
+import majornick.cfreminderbot.models.Contest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,32 +21,37 @@ import java.util.concurrent.TimeUnit;
 
 public class ContestReminderBot {
     private final String CF_CONTEST_LIST = "https://codeforces.com/api/contest.list?gym=false";
-    private final String CHANNEL_ID = "{ChanelID}";
+    private final String CHANNEL_ID = "{channelId}";
 
     public void start() {
         DiscordClient client = DiscordClient.create("{Token}");
+        scheduleMessage(client);
         scheduleCFContestParsing(client);
         client.login().block();
     }
 
     private void scheduleCFContestParsing(DiscordClient client) {
-        long initialDelay = Duration.between(LocalTime.now(), LocalTime.of(0, 1))
+        long initialDelay = Duration.between(LocalTime.now(), LocalTime.of(18, 22))
                 .toSeconds();
         if (initialDelay < 0) {
             initialDelay += Duration.ofDays(1).toSeconds();
         }
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
         scheduler.scheduleAtFixedRate(() -> {
-            Optional<Contest> contestOPT = getTodaysContest();
-            if (contestOPT.isPresent()) {
-                Contest c = contestOPT.get();
-                long delayForToday = Duration.between(LocalDateTime.now(), c.getStartTime().minusMinutes(30)).toMillis();
-                scheduler.schedule(() -> {
-                    client.getChannelById(Snowflake.of(CHANNEL_ID)).createMessage(createReminderMessage(c)).subscribe();
-                }, delayForToday, TimeUnit.MILLISECONDS);
-            }
+            scheduleMessage(client);
         }, initialDelay, TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
+    }
 
+    private void scheduleMessage(DiscordClient client) {
+        Optional<Contest> contestOPT = getTodaysContest();
+        if (contestOPT.isPresent()) {
+            Contest c = contestOPT.get();
+            long delayForToday = Duration.between(LocalDateTime.now(), c.getStartTime().minusMinutes(10)).toMillis();
+            ScheduledExecutorService messageScheduler = Executors.newScheduledThreadPool(1);
+            messageScheduler.schedule(() -> {
+                client.getChannelById(Snowflake.of(CHANNEL_ID)).createMessage(createReminderMessage(c)).subscribe();
+            }, delayForToday, TimeUnit.MILLISECONDS);
+        }
     }
 
 
@@ -86,6 +91,6 @@ public class ContestReminderBot {
     }
 
     private String createReminderMessage(Contest c) {
-        return String.format("CONTEST REMINDER!\n %s\n", c.toString());
+        return String.format("@everyone CONTEST REMINDER!\n %s in %d minutes\n", c.getName(),Duration.between(LocalDateTime.now(),c.getStartTime()).toMinutes());
     }
 }

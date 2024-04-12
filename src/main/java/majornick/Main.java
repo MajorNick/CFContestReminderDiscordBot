@@ -1,4 +1,6 @@
-import majornick.ContestReminderBot;
+package majornick;
+
+import majornick.cfreminderbot.ContestReminderBot;
 
 public class Main {
     public static void main(String[] args){

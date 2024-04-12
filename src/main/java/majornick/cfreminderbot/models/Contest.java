@@ -1,8 +1,7 @@
-package majornick.models;
+package majornick.cfreminderbot.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(value={ "id","type","frozen","durationSeconds","relativeTimeSeconds",
@@ -48,9 +47,7 @@ public class Contest{
 
     @Override
     public String toString() {
-        return "Contest{" +
-                "name='" + name + '\'' +
-                ", startTime ='" + startTime + '\'' +
-                '}';
+        return "name='" + name + '\'' +
+                ", startTime ='" + startTime + '\'' ;
     }
 }

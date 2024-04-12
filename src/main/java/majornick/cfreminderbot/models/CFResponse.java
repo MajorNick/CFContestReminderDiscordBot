@@ -1,4 +1,4 @@
-package majornick.models;
+package majornick.cfreminderbot.models;
 
 import java.util.List;
 
