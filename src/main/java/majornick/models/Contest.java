@@ -3,6 +3,7 @@ package majornick.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(value={ "id","type","frozen","durationSeconds","relativeTimeSeconds",
                             "preparedBy","websiteUrl","description","kind","icpcRegion","country","city","season"}, allowGetters=true)
@@ -10,10 +11,16 @@ public class Contest{
     private String name;
     private String phase;
     private String startTimeSeconds;
+    private LocalDateTime startTime;
 
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
 
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
 
-    private  int difficulty;
 
     public String getName() {
         return name;
@@ -39,21 +46,11 @@ public class Contest{
         this.startTimeSeconds = startTimeSeconds;
     }
 
-    public int getDifficulty() {
-        return difficulty;
-    }
-
-    public void setDifficulty(int difficulty) {
-        this.difficulty = difficulty;
-    }
-
     @Override
     public String toString() {
         return "Contest{" +
                 "name='" + name + '\'' +
-                ", phase='" + phase + '\'' +
-                ", startTimeSeconds='" + startTimeSeconds + '\'' +
-                ", difficulty=" + difficulty +
+                ", startTime ='" + startTime + '\'' +
                 '}';
     }
 }
